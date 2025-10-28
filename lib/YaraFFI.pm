@@ -30,6 +30,8 @@ rule_match and string_match events via a Perl callback.
 Currently it focuses on correctness and minimal functionality, not full YARA
 feature coverage.
 
+For more information, please follow the L<official documentation|https://yara.readthedocs.io/en/latest>.
+
 =head1 FEATURES
 
 =over 4

@@ -1,6 +1,6 @@
 package YaraFFI;
 
-$YaraFFI::VERSION   = '0.01';
+$YaraFFI::VERSION   = '0.02';
 $YaraFFI::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,16 +9,27 @@ YaraFFI - Minimal Perl FFI bindings for the YARA malware scanning engine
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =head1 SYNOPSIS
 
     use YaraFFI;
+
+    my $rules = <<'YARA';
+    rule HelloWorld {
+        strings:
+        $a = "hello" ascii
+        condition:
+        $a
+    }
+    YARA
+
     my $yara = YaraFFI->new;
-    $yara->compile($rules);
-    $yara->scan_buffer($data, sub {
+    $yara->compile($rules) or die "compile failed";
+
+    $yara->scan_buffer("hello hacker", sub {
         my ($event) = @_;
-        say "Matched: $event";
+        print "Matched rule: $event\n";
     });
 
 =head1 DESCRIPTION
@@ -65,20 +76,9 @@ For more information, please follow the L<official documentation|https://yara.re
 use v5.14;
 use strict;
 use warnings;
+use YaraFFI::Event;
 use FFI::Platypus 2.00;
 use File::Slurp qw(read_file);
-
-# Event class that stringifies to rule name but also works as a hash
-package YaraFFI::Event {
-    use overload '""' => sub { $_[0]->{rule} }, fallback => 1;
-
-    sub new {
-        my ($class, %args) = @_;
-        return bless \%args, $class;
-    }
-}
-
-package YaraFFI;
 
 my $ffi = FFI::Platypus->new(api => 2);
 $ffi->lib("libyara.so");

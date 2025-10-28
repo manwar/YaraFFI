@@ -1,6 +1,6 @@
 package YaraFFI::Record::YR_RULE;
 
-$YaraFFI::Record::YR_RULE::VERSION   = '0.01';
+$YaraFFI::Record::YR_RULE::VERSION   = '0.02';
 $YaraFFI::Record::YR_RULE::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,7 +9,7 @@ YaraFFI::Record::YR_RULE - YR_RULE for YaraFFI
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =cut
 

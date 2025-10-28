@@ -1,4 +1,8 @@
 Revision history for YaraFFI
 
+0.02  2025-10-28
+      - Extracted YaraFFI::Event package.
+      - Updated SYNOPSIS example.
+
 0.01  2025-10-28
-      - Module Created.
+      - module created.

@@ -16,7 +16,7 @@ Version 0.01
     use YaraFFI;
     my $yara = YaraFFI->new;
     $yara->compile($rules);
-    $yara->scan_mem($data, sub {
+    $yara->scan_buffer($data, sub {
         my ($event) = @_;
         say "Matched: $event";
     });
@@ -36,7 +36,7 @@ feature coverage.
 
 =item * Compile YARA rules from string
 
-=item * Scan in-memory buffers (C<scan_mem>)
+=item * Scan in-memory buffers (C<scan_buffer>)
 
 =item * Scan files (C<scan_file>)
 

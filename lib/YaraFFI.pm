@@ -136,80 +136,61 @@ sub scan_file {
 }
 
 sub scan_buffer {
-    my ($self, $buffer, $callback) = @_;
+    my ($self, $buffer, $callback, %opts) = @_;
     die "Compile rules first" unless $self->{rules};
 
     my $len = length($buffer);
-
-    # Use FFI::Platypus's cast to get a proper pointer to the buffer
     my $ptr = $ffi->cast('string' => 'opaque', $buffer);
-
-    # Collect callback events
     my @events;
 
-    # Define the callback
+    my $emit_strings = $opts{emit_string_events} // 1;
+
     my $callback_sub = $ffi->closure(sub {
         my ($context, $message, $message_data, $user_data) = @_;
 
         if ($message == CALLBACK_MSG_RULE_MATCHING) {
-            # message_data is a pointer to YR_RULE struct
-            # The identifier is at offset 16 (after g_flags and t_flags)
             eval {
                 if ($message_data) {
                     my $found = 0;
 
-                    # The identifier field is at offset 16 based on testing
-                    # Scan a bit to be safe across different YARA versions
                     OFFSET_LOOP: for (my $offset = 8; $offset < 256 && !$found; $offset += 8) {
-                        my $name_ptr_value;
                         my $rule_name;
-
                         eval {
                             my $identifier_field_addr = $message_data + $offset;
                             my $ptr_bytes = $ffi->cast('opaque' => 'string(8)', $identifier_field_addr);
-                            $name_ptr_value = unpack('Q', $ptr_bytes);
+                            my $name_ptr_value = unpack('Q', $ptr_bytes);
 
-                            # Check if this looks like a valid heap pointer
                             return if $name_ptr_value < 4096;
                             return if $name_ptr_value > 140737488355327 && $] >= 5.008;
 
-                            # Try to read it as a string
                             $rule_name = $ffi->cast('opaque' => 'string', $name_ptr_value);
                         };
 
-                        if (!$@ && defined $rule_name && length($rule_name) > 0 && length($rule_name) < 256) {
-                            # Check if it looks like a valid YARA rule identifier
-                            if ($rule_name =~ /^[a-zA-Z_][a-zA-Z0-9_]*$/) {
+                        if (!$@ && defined $rule_name && $rule_name =~ /^[a-zA-Z_][a-zA-Z0-9_]*$/) {
 
-                                # Store events for detailed tests
-                                my $rule_event = YaraFFI::Event->new(
-                                    event => 'rule_match',
-                                    rule => $rule_name,
-                                );
-                                push @events, $rule_event;
+                            # Always push the rule_match event
+                            my $rule_event = YaraFFI::Event->new(
+                                event => 'rule_match',
+                                rule  => $rule_name,
+                            );
+                            push @events, $rule_event;
+                            $callback->($rule_event) if defined $callback && ref $callback eq 'CODE';
 
+                            # Only emit string_match if enabled
+                            if ($emit_strings) {
                                 my $string_event = YaraFFI::Event->new(
-                                    event => 'string_match',
-                                    rule => $rule_name,
+                                    event     => 'string_match',
+                                    rule      => $rule_name,
                                     string_id => '$',
                                 );
                                 push @events, $string_event;
-
-                                # Call user callback if provided
-                                if (defined $callback && ref $callback eq 'CODE') {
-                                    # Pass events - they stringify to rule name for t/01_basic.t
-                                    # but also work as hashes for detailed tests
-                                    $callback->($rule_event);
-                                    $callback->($string_event);
-                                }
-
-                                $found = 1;
-                                last OFFSET_LOOP;
+                                $callback->($string_event) if defined $callback && ref $callback eq 'CODE';
                             }
+
+                            $found = 1;
+                            last OFFSET_LOOP;
                         }
                     }
-
-                    warn "DEBUG: Could not find valid rule name\n" if !$found;
                 }
             };
             warn "Callback error: $@" if $@;
@@ -218,10 +199,7 @@ sub scan_buffer {
         return CALLBACK_CONTINUE;
     });
 
-    # Perform the scan
     my $res = yr_rules_scan_mem($self->{rules}, $ptr, $len, 0, $callback_sub, undef, 0);
-
-    # Return 0 for success (ERROR_SUCCESS), non-zero for errors
     return $res;
 }
 

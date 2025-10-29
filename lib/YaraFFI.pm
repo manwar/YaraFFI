@@ -1,6 +1,6 @@
 package YaraFFI;
 
-$YaraFFI::VERSION   = '0.02';
+$YaraFFI::VERSION   = '0.03';
 $YaraFFI::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,7 +9,7 @@ YaraFFI - Minimal Perl FFI bindings for the YARA malware scanning engine
 
 =head1 VERSION
 
-Version 0.02
+Version 0.03
 
 =head1 SYNOPSIS
 

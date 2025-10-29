@@ -1,5 +1,8 @@
 Revision history for YaraFFI
 
+0.03  2025-10-29
+      - Removed redundant package YaraFFI::Record::YR_RULE.
+
 0.02  2025-10-28
       - Extracted YaraFFI::Event package.
       - Updated SYNOPSIS example.

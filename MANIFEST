@@ -1,7 +1,6 @@
 Changes
 lib/YaraFFI.pm
 lib/YaraFFI/Event.pm
-lib/YaraFFI/Record/YR_RULE.pm
 LICENSE
 Makefile.PL
 MANIFEST

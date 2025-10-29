@@ -1,6 +1,6 @@
 package YaraFFI;
 
-$YaraFFI::VERSION   = '0.05';
+$YaraFFI::VERSION   = '0.06';
 $YaraFFI::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,7 +9,7 @@ YaraFFI - Minimal Perl FFI bindings for the YARA malware scanning engine
 
 =head1 VERSION
 
-Version 0.05
+Version 0.06
 
 =head1 SYNOPSIS
 
@@ -52,11 +52,11 @@ Version 0.05
 
 =head1 DESCRIPTION
 
-YaraFFI provides lightweight FFI bindings to libyara, allowing you to compile
-YARA rules from strings and scan memory buffers or files. It supports basic
-rule_match and string_match events via a Perl callback.
+C<YaraFFI> provides lightweight C<FFI> bindings to C<libyara>, allowing you to compile
+C<YARA> rules from strings and scan memory buffers or files. It supports basic
+C<rule_match> and C<string_match> events via a Perl callback.
 
-Currently it focuses on correctness and minimal functionality, not full YARA
+Currently it focuses on correctness and minimal functionality, not full C<YARA>
 feature coverage.
 
 For more information, please follow the L<official documentation|https://yara.readthedocs.io/en/latest>.
@@ -65,13 +65,13 @@ For more information, please follow the L<official documentation|https://yara.re
 
 =over 4
 
-=item * Compile YARA rules from string
+=item * Compile C<YARA> rules from string
 
 =item * Scan in-memory buffers (C<scan_buffer>)
 
 =item * Scan files (C<scan_file>)
 
-=item * Events passed to callback are simple objects (rule_match, string_match)
+=item * Events passed to callback are simple objects (C<rule_match>, C<string_match>)
 
 =item * Match offset reporting for string matches (when enabled)
 

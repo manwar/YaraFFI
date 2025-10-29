@@ -1,6 +1,6 @@
 package YaraFFI::Event;
 
-$YaraFFI::Event::VERSION   = '0.05';
+$YaraFFI::Event::VERSION   = '0.06';
 $YaraFFI::Event::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,7 +9,7 @@ YaraFFI::Event - Event class that stringifies to rule name but also works as a h
 
 =head1 VERSION
 
-Version 0.05
+Version 0.06
 
 =head1 SYNOPSIS
 
@@ -44,31 +44,31 @@ Version 0.05
 
 =head1 DESCRIPTION
 
-YaraFFI::Event represents a scanning event from YARA. It can be used as a string
+C<YaraFFI::Event> represents a scanning event from C<YARA>. It can be used as a string
 (stringifies to the rule name) or as a hash/object to access event details.
 
-Events are created during YARA scans and passed to callback functions.
+Events are created during C<YARA> scans and passed to callback functions.
 
 =head1 EVENT TYPES
 
 =head2 rule_match
 
-Emitted when a YARA rule matches the scanned data.
+Emitted when a C<YARA> rule matches the scanned data.
 
-Fields:
-    event    => 'rule_match'
-    rule     => 'RuleName'
-    metadata => { key => value, ... }  # Optional, rule metadata
+    Fields:
+        event    => 'rule_match'
+        rule     => 'RuleName'
+        metadata => { key => value, ... }  # Optional, rule metadata
 
 =head2 string_match
 
 Emitted when a string pattern within a rule matches.
 
-Fields:
-    event     => 'string_match'
-    rule      => 'RuleName'
-    string_id => '$string_identifier'
-    offsets   => [offset1, offset2, ...]  # Byte offsets where string matched
+    Fields:
+        event     => 'string_match'
+        rule      => 'RuleName'
+        string_id => '$string_identifier'
+        offsets   => [offset1, offset2, ...]  # Byte offsets where string matched
 
 =head1 METHODS
 
@@ -96,7 +96,7 @@ sub new {
 
 =head2 event
 
-Returns the event type ('rule_match' or 'string_match').
+Returns the event type (C<rule_match> or C<string_match>).
 
     my $type = $event->event;
 
@@ -139,7 +139,7 @@ sub metadata {
 
 =head2 string_id
 
-Returns the string identifier (string_match events only).
+Returns the string identifier (C<string_match> events only).
 
     my $id = $event->string_id;  # e.g., '$suspicious'
 
@@ -152,7 +152,7 @@ sub string_id {
 
 =head2 offsets
 
-Returns an array reference of byte offsets where the string matched (string_match events only).
+Returns an array reference of byte offsets where the string matched (C<string_match> events only).
 
     my $offsets = $event->offsets;
     for my $offset (@$offsets) {
@@ -235,7 +235,7 @@ sub has_offsets {
 
 =head2 match_count
 
-Returns the number of times the string matched (for string_match events).
+Returns the number of times the string matched (for C<string_match> events).
 
     my $count = $event->match_count;
 
@@ -263,7 +263,7 @@ sub is_rule_match {
 
 =head2 is_string_match
 
-Returns true if this is a string_match event.
+Returns true if this is a C<string_match> event.
 
     if ($event->is_string_match) {
         # Handle string match

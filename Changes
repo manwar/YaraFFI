@@ -1,5 +1,8 @@
 Revision history for YaraFFI
 
+0.06  2025-10-29
+      - Tidied up pod a bit.
+
 0.05  2025-10-29
       - Introduced record definition packages:
         YaraFFI::Record::YR_MATCH

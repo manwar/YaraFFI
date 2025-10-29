@@ -1,6 +1,10 @@
 Changes
 lib/YaraFFI.pm
 lib/YaraFFI/Event.pm
+lib/YaraFFI/Record/YR_MATCH.pm
+lib/YaraFFI/Record/YR_META.pm
+lib/YaraFFI/Record/YR_RULE.pm
+lib/YaraFFI/Record/YR_STRING.pm
 LICENSE
 Makefile.PL
 MANIFEST

@@ -1,6 +1,6 @@
 package YaraFFI::Event;
 
-$YaraFFI::Event::VERSION   = '0.04';
+$YaraFFI::Event::VERSION   = '0.05';
 $YaraFFI::Event::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,7 +9,7 @@ YaraFFI::Event - Event class that stringifies to rule name but also works as a h
 
 =head1 VERSION
 
-Version 0.04
+Version 0.05
 
 =head1 SYNOPSIS
 

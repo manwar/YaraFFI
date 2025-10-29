@@ -1,9 +1,10 @@
+#!/usr/bin/env perl
+
+use v5.14;
 use strict;
 use warnings;
-use Test::More;
-use FindBin;
-use lib "$FindBin::Bin/../lib";
 use YaraFFI;
+use Test::More;
 
 my $yara = YaraFFI->new();
 

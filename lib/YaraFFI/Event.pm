@@ -1,6 +1,6 @@
 package YaraFFI::Event;
 
-$YaraFFI::Event::VERSION   = '0.03';
+$YaraFFI::Event::VERSION   = '0.04';
 $YaraFFI::Event::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,7 +9,77 @@ YaraFFI::Event - Event class that stringifies to rule name but also works as a h
 
 =head1 VERSION
 
-Version 0.03
+Version 0.04
+
+=head1 SYNOPSIS
+
+    use YaraFFI::Event;
+
+    # Create a rule match event with metadata
+    my $event = YaraFFI::Event->new(
+        event    => 'rule_match',
+        rule     => 'MalwareRule',
+        metadata => {
+            author      => 'Security Team',
+            description => 'Detects malware',
+            severity    => 5,
+            active      => 1,
+        },
+    );
+
+    print "Matched: $event\n";  # Stringifies to rule name
+    print "Author: ", $event->metadata->{author}, "\n";
+    print "Severity: ", $event->severity, "\n";
+
+    # Create a string match event with offsets
+    my $str_event = YaraFFI::Event->new(
+        event     => 'string_match',
+        rule      => 'MalwareRule',
+        string_id => '$suspicious',
+        offsets   => [0, 42, 128],
+    );
+
+    print "String: ", $str_event->string_id, "\n";
+    print "Found at: ", join(", ", @{$str_event->offsets}), "\n";
+
+=head1 DESCRIPTION
+
+YaraFFI::Event represents a scanning event from YARA. It can be used as a string
+(stringifies to the rule name) or as a hash/object to access event details.
+
+Events are created during YARA scans and passed to callback functions.
+
+=head1 EVENT TYPES
+
+=head2 rule_match
+
+Emitted when a YARA rule matches the scanned data.
+
+Fields:
+    event    => 'rule_match'
+    rule     => 'RuleName'
+    metadata => { key => value, ... }  # Optional, rule metadata
+
+=head2 string_match
+
+Emitted when a string pattern within a rule matches.
+
+Fields:
+    event     => 'string_match'
+    rule      => 'RuleName'
+    string_id => '$string_identifier'
+    offsets   => [offset1, offset2, ...]  # Byte offsets where string matched
+
+=head1 METHODS
+
+=head2 new(%args)
+
+Creates a new event object.
+
+    my $event = YaraFFI::Event->new(
+        event => 'rule_match',
+        rule  => 'TestRule',
+    );
 
 =cut
 
@@ -23,6 +93,208 @@ sub new {
     my ($class, %args) = @_;
     return bless \%args, $class;
 }
+
+=head2 event
+
+Returns the event type ('rule_match' or 'string_match').
+
+    my $type = $event->event;
+
+=cut
+
+sub event {
+    my ($self) = @_;
+    return $self->{event};
+}
+
+=head2 rule
+
+Returns the name of the matched rule.
+
+    my $rule_name = $event->rule;
+
+=cut
+
+sub rule {
+    my ($self) = @_;
+    return $self->{rule};
+}
+
+=head2 metadata
+
+Returns the rule metadata as a hash reference (rule_match events only).
+
+    my $meta = $event->metadata;
+    if ($meta) {
+        print "Author: $meta->{author}\n";
+        print "Severity: $meta->{severity}\n";
+    }
+
+=cut
+
+sub metadata {
+    my ($self) = @_;
+    return $self->{metadata};
+}
+
+=head2 string_id
+
+Returns the string identifier (string_match events only).
+
+    my $id = $event->string_id;  # e.g., '$suspicious'
+
+=cut
+
+sub string_id {
+    my ($self) = @_;
+    return $self->{string_id};
+}
+
+=head2 offsets
+
+Returns an array reference of byte offsets where the string matched (string_match events only).
+
+    my $offsets = $event->offsets;
+    for my $offset (@$offsets) {
+        print "Match at byte $offset\n";
+    }
+
+=cut
+
+sub offsets {
+    my ($self) = @_;
+    return $self->{offsets} || [];
+}
+
+=head2 Convenience Metadata Accessors
+
+For common metadata fields, you can access them directly:
+
+    my $author = $event->author;
+    my $desc   = $event->description;
+    my $sev    = $event->severity;
+
+These return undef if the metadata doesn't exist or the field isn't present.
+
+=cut
+
+sub author {
+    my ($self) = @_;
+    return $self->{metadata} ? $self->{metadata}{author} : undef;
+}
+
+sub description {
+    my ($self) = @_;
+    return $self->{metadata} ? $self->{metadata}{description} : undef;
+}
+
+sub severity {
+    my ($self) = @_;
+    return $self->{metadata} ? $self->{metadata}{severity} : undef;
+}
+
+sub reference {
+    my ($self) = @_;
+    return $self->{metadata} ? $self->{metadata}{reference} : undef;
+}
+
+sub date {
+    my ($self) = @_;
+    return $self->{metadata} ? $self->{metadata}{date} : undef;
+}
+
+=head2 has_metadata
+
+Returns true if the event has metadata.
+
+    if ($event->has_metadata) {
+        # Process metadata
+    }
+
+=cut
+
+sub has_metadata {
+    my ($self) = @_;
+    return defined $self->{metadata} && ref $self->{metadata} eq 'HASH' && keys %{$self->{metadata}} > 0;
+}
+
+=head2 has_offsets
+
+Returns true if the event has match offsets.
+
+    if ($event->has_offsets) {
+        print "Matches at: ", join(", ", @{$event->offsets}), "\n";
+    }
+
+=cut
+
+sub has_offsets {
+    my ($self) = @_;
+    return defined $self->{offsets} && ref $self->{offsets} eq 'ARRAY' && @{$self->{offsets}} > 0;
+}
+
+=head2 match_count
+
+Returns the number of times the string matched (for string_match events).
+
+    my $count = $event->match_count;
+
+=cut
+
+sub match_count {
+    my ($self) = @_;
+    return $self->{offsets} ? scalar(@{$self->{offsets}}) : 0;
+}
+
+=head2 is_rule_match
+
+Returns true if this is a rule_match event.
+
+    if ($event->is_rule_match) {
+        # Handle rule match
+    }
+
+=cut
+
+sub is_rule_match {
+    my ($self) = @_;
+    return $self->{event} && $self->{event} eq 'rule_match';
+}
+
+=head2 is_string_match
+
+Returns true if this is a string_match event.
+
+    if ($event->is_string_match) {
+        # Handle string match
+    }
+
+=cut
+
+sub is_string_match {
+    my ($self) = @_;
+    return $self->{event} && $self->{event} eq 'string_match';
+}
+
+=head2 to_hash
+
+Returns the event as a plain hash reference.
+
+    my $hash = $event->to_hash;
+
+=cut
+
+sub to_hash {
+    my ($self) = @_;
+    return { %$self };
+}
+
+=head1 OVERLOADING
+
+The event object overloads string concatenation, so it can be used directly
+in print statements and will display the rule name:
+
+    print "Matched: $event\n";  # Prints "Matched: RuleName"
 
 =head1 AUTHOR
 

@@ -28,11 +28,11 @@ WriteMakefile(
         provides    => {
             'YaraFFI'   => {
                 file    => 'lib/YaraFFI.pm',
-                version => '0.03'
+                version => '0.04'
             },
             'YaraFFI::Event' => {
                 file    => 'lib/YaraFFI/Event.pm',
-                version => '0.03'
+                version => '0.04'
             },
         },
         resources => {

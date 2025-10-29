@@ -1,12 +1,11 @@
+#!/usr/bin/env perl
+
+use v5.14;
 use strict;
 use warnings;
-use Test::More;
-use FindBin;
-use lib "$FindBin::Bin/../lib";
 use YaraFFI;
+use Test::More;
 use File::Temp qw(tempfile);
-
-plan tests => 4;
 
 # Create new YARA instance
 my $yara = YaraFFI->new();
@@ -34,7 +33,9 @@ close $fh;
 my $matched_rule;
 my $res = $yara->scan_file($filename, sub {
     my ($event) = @_;        # YaraFFI::Event object
-    $matched_rule = "$event";  # stringify explicitly
+    if ($event->is_rule_match) {
+        $matched_rule = $event->rule;
+    }
 });
 
 is($res, 0, "scan_file returned success");

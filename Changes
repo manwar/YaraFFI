@@ -1,5 +1,9 @@
 Revision history for YaraFFI
 
+0.04  2025-10-29
+      - Match offset reporting for string matches (when enabled)
+      - Rule metadata extraction (when enabled)
+
 0.03  2025-10-29
       - Removed redundant package YaraFFI::Record::YR_RULE.
 

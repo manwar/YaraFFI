@@ -26,8 +26,13 @@ jobs:
       if: runner.os == 'Linux'
       run: |
         sudo apt-get update
-        sudo apt-get install -y libjansson-dev libmagic-dev
+        sudo apt-get install -y libjansson-dev libmagic-dev libyara-dev
         sudo apt-get install -y automake autoconf libtool make gcc pkg-config
+
+    - name: Install Distribution Dependencies (including Alien::YARA)
+      run: |
+        ALIEN_INSTALL_TYPE=system cpanm --notest https://cpan.metacpan.org/authors/id/M/MA/MANWAR/Alien-YARA-v0.0.2.tar.gz
+        cpanm --notest --installdeps .
 
     - name: Install System Build Prerequisites (Native macOS Cloud VM Only)
       if: runner.os == 'macOS'

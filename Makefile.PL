@@ -17,7 +17,7 @@ WriteMakefile(
         'Alien::YARA'         => 'v0.0.2',
     },
     PREREQ_PM => {
-        'FFI::Platypus' => 1.00,
+        'FFI::Platypus' => 2.00,
         'FFI::CheckLib' => 0,
         'File::Slurp'   => 0,
         'Alien::YARA'   => 'v0.0.2',

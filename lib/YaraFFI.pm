@@ -373,7 +373,6 @@ sub scan_buffer {
     die "Compile rules first" unless $self->{rules};
 
     my $len = length($buffer);
-    #my $ptr = $ffi->cast('string' => 'opaque', $buffer);
     my $buffer_copy = $buffer;   # take ownership; prevents GC moving it under us
     my $ptr = unpack('J', pack('p', $buffer_copy));  # 'p' = stable C pointer to Perl string
 
@@ -517,8 +516,6 @@ sub scan_buffer {
         return CALLBACK_CONTINUE;
     });
 
-    #my $res = yr_rules_scan_mem($self->{rules}, $ptr, $len, 0, $callback_sub, undef, 0);
-    #return $res;
     my $res = yr_rules_scan_mem($self->{rules}, $ptr, $len, 0, $callback_sub, undef, 0);
     undef $callback_sub;   # explicitly release the FFI closure only after scan completes
     undef $buffer_copy;    # release pinned buffer

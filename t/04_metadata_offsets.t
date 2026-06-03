@@ -130,7 +130,6 @@ RULES
     is($string_event->string_id, '$', "Generic string ID used by default");
 
     undef $yara;
-    diag "Test 6 cleanup OK";
 }
 
 # Test 7: Scan with metadata extraction enabled
@@ -175,7 +174,6 @@ RULES
     }
 
     undef $yara;
-    diag "Test 7 cleanup OK";
 }
 
 # Test 8: Scan with offset extraction enabled
@@ -219,7 +217,6 @@ RULES
 
     undef @events;
     undef $yara;
-    diag "Test 8 cleanup OK";
 }
 
 # Test 9: Scan with both metadata and offsets enabled
@@ -256,7 +253,6 @@ RULES
     ok(defined $string_event, "String match event exists");
 
     undef $yara;
-    diag "Test 9 cleanup OK";
 }
 
 # Test 10: Multiple rules with metadata
@@ -300,7 +296,6 @@ RULES
     is_deeply(\@rule_names, ['Rule1', 'Rule2'], "Correct rules matched");
 
     undef $yara;
-    diag "Test 10 cleanup OK";
 }
 
 # Test 11: Disable string events
@@ -375,7 +370,6 @@ RULES
     is(scalar @events, 0, "No events for non-matching scan");
 
     undef $yara;
-    diag "Test 13 cleanup OK";
 }
 
 # Test 14: Error handling - scan without compile
@@ -389,7 +383,6 @@ RULES
     like($@, qr/Compile rules first/, "Error thrown when scanning without compiling");
 
     undef $yara;
-    diag "Test 14 cleanup OK";
 }
 
 # Test 15: Multiple string patterns in single rule
@@ -424,7 +417,6 @@ RULES
     ok(@string_events >= 1, "String match events received");
 
     undef $yara;
-    diag "Test 15 cleanup OK";
 }
 
 # Test 16: Metadata with different types

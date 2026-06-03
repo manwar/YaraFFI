@@ -14,11 +14,13 @@ WriteMakefile(
     MIN_PERL_VERSION   => 5.014,
     CONFIGURE_REQUIRES => {
         'ExtUtils::MakeMaker' => 0,
+        'Alien::YARA'         => 'v0.0.2',
     },
     PREREQ_PM => {
         'FFI::Platypus' => 1.00,
         'FFI::CheckLib' => 0,
         'File::Slurp'   => 0,
+        'Alien::YARA'   => 'v0.0.2',
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     test  => { TESTS => 't/*.t' },

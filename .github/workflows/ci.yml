@@ -1,0 +1,61 @@
+name: Cross-Platform CI
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  perl-test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        perl-version: ['5.38', '5.40']
+
+    steps:
+    - name: Checkout YaraFFI code
+      uses: actions/checkout@v4
+
+    - name: Set up Perl (${{ matrix.perl-version }})
+      uses: shogo82148/actions-setup-perl@v1
+      with:
+        perl-version: ${{ matrix.perl-version }}
+
+    - name: Install System Build Prerequisites (Linux VM or Local Docker)
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libjansson-dev libmagic-dev libyara-dev
+        sudo apt-get install -y automake autoconf libtool make gcc pkg-config
+
+    - name: Install System Build Prerequisites (Native macOS Cloud VM Only)
+      if: runner.os == 'macOS'
+      run: |
+        brew install automake autoconf libtool pkg-config
+
+    - name: Install Core Build Prerequisites
+      run: |
+        cpanm --notest ExtUtils::MakeMaker FFI::Platypus FFI::CheckLib Mozilla::CA
+
+    - name: Install Distribution Dependencies (including Alien::YARA)
+      run: |
+        cpanm --notest https://cpan.metacpan.org/authors/id/M/MA/MANWAR/Alien-YARA-v0.0.2.tar.gz
+        cpanm --notest --installdeps .
+
+    - name: Dump cpanm build log on failure
+      if: failure()
+      run: |
+        cat ~/.cpanm/work/*/build.log || true
+        cat /root/.cpanm/work/*/build.log || true
+
+    - name: Configure and Build YaraFFI
+      run: |
+        perl Makefile.PL
+        make clean
+        perl Makefile.PL
+        make
+
+    - name: Run YaraFFI Test Suite
+      run: |
+        prove -b -v t/04_metadata_offsets.t

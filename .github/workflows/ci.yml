@@ -26,7 +26,7 @@ jobs:
       if: runner.os == 'Linux'
       run: |
         sudo apt-get update
-        sudo apt-get install -y libjansson-dev libmagic-dev libyara-dev
+        sudo apt-get install -y libjansson-dev libmagic-dev
         sudo apt-get install -y automake autoconf libtool make gcc pkg-config
 
     - name: Install System Build Prerequisites (Native macOS Cloud VM Only)
@@ -55,6 +55,15 @@ jobs:
         make clean
         perl Makefile.PL
         make
+
+    - name: Show test file state
+      run: |
+        echo "=== Test count ==="
+        grep -c "cleanup OK" t/04_metadata_offsets.t || echo "0 cleanup lines"
+        echo "=== YaraFFI.pm state ==="
+        grep -n "our \$ffi\|yara_finalized" lib/YaraFFI.pm
+        echo "=== blib state ==="
+        grep -n "our \$ffi\|yara_finalized" blib/lib/YaraFFI.pm
 
     - name: Run YaraFFI Test Suite
       run: |

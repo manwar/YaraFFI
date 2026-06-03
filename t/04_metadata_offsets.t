@@ -128,6 +128,9 @@ RULES
     ok(defined $string_event, "Found string_match event");
     # Note: By default it emits a generic string_match with empty offsets
     is($string_event->string_id, '$', "Generic string ID used by default");
+
+    undef $yara;
+    diag "Test 6 cleanup OK";
 }
 
 # Test 7: Scan with metadata extraction enabled
@@ -170,6 +173,9 @@ RULES
     } else {
         pass("Metadata not extracted (YARA version may not support it, but didn't crash)");
     }
+
+    undef $yara;
+    diag "Test 7 cleanup OK";
 }
 
 # Test 8: Scan with offset extraction enabled
@@ -210,6 +216,10 @@ RULES
             cmp_ok($event->match_count, '>', 0, "Match count is positive");
         }
     }
+
+    undef @events;
+    undef $yara;
+    diag "Test 8 cleanup OK";
 }
 
 # Test 9: Scan with both metadata and offsets enabled
@@ -244,6 +254,9 @@ RULES
 
     my ($string_event) = grep { $_->is_string_match } @events;
     ok(defined $string_event, "String match event exists");
+
+    undef $yara;
+    diag "Test 9 cleanup OK";
 }
 
 # Test 10: Multiple rules with metadata
@@ -285,6 +298,9 @@ RULES
 
     my @rule_names = sort map { $_->rule } @rule_events;
     is_deeply(\@rule_names, ['Rule1', 'Rule2'], "Correct rules matched");
+
+    undef $yara;
+    diag "Test 10 cleanup OK";
 }
 
 # Test 11: Disable string events
@@ -357,6 +373,9 @@ RULES
 
     is($res, 0, "Scan completed");
     is(scalar @events, 0, "No events for non-matching scan");
+
+    undef $yara;
+    diag "Test 13 cleanup OK";
 }
 
 # Test 14: Error handling - scan without compile
@@ -368,6 +387,9 @@ RULES
     };
 
     like($@, qr/Compile rules first/, "Error thrown when scanning without compiling");
+
+    undef $yara;
+    diag "Test 14 cleanup OK";
 }
 
 # Test 15: Multiple string patterns in single rule
@@ -400,6 +422,9 @@ RULES
 
     my @string_events = grep { $_->is_string_match } @events;
     ok(@string_events >= 1, "String match events received");
+
+    undef $yara;
+    diag "Test 15 cleanup OK";
 }
 
 # Test 16: Metadata with different types
@@ -446,3 +471,5 @@ RULES
 }
 
 done_testing;
+
+STDOUT->flush;
